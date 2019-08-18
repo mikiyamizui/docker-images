@@ -1,0 +1,75 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "service",
+            "description": "Choose service",
+            "type": "pickString",
+            "options": [
+                "base-alpine",
+                "base-sdk-alpine",
+                "netcore-alpine",
+                "netcore-sdk-alpine"
+            ],
+            "default": "netcore-sdk-alpine"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "run",
+            "type": "process",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "command": "docker",
+            "args": [
+                "run",
+                "-it",
+                "--rm",
+                "mikiyamizui/${input:service}",
+                "fish"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "build",
+            "type": "process",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "docker-compose",
+            "args": [
+                "build"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true,
+                "clear": true
+            }
+        },
+        {
+            "label": "push",
+            "type": "process",
+            "group": "none",
+            "command": "docker-compose",
+            "args": [
+                "push"
+            ],
+            "dependsOn": [
+                "build"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true,
+                "clear": true
+            }
+        }
+    ]
+}
