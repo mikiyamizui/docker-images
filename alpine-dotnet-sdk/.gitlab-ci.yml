@@ -1,0 +1,8 @@
+alpine-dotnet-sdk:
+  extends: .build_push
+  stage: alpine-dotnet-sdk
+  variables:
+    SHORT_TAG: "2.2"
+    LONG_TAG: "2.2.401"
+  dependencies:
+    - alpine-dev

@@ -1,0 +1,8 @@
+alpine-dev:
+  extends: .build_push
+  stage: alpine-dev
+  variables:
+    SHORT_TAG: "3.10"
+    LONG_TAG: "3.10.1"
+  dependencies:
+    - alpine
