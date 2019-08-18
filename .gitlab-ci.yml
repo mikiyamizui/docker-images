@@ -32,8 +32,6 @@ alpine:
     - docker push ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_SHORT_VERSION}
     - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_LONG_VERSION} ./alpine
     - docker push ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_LONG_VERSION}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${CI_COMMIT_REF_SLUG} ./alpine
-    - docker push ${CI_REGISTRY_IMAGE}/alpine:${CI_COMMIT_REF_SLUG}
 
 alpine-dev:
   stage: alpine-dev
