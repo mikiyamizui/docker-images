@@ -1,6 +1,6 @@
-FROM mikiyamizui/base-sdk-alpine
+FROM mikiyamizui/alpine
 
-ARG URL=https://download.visualstudio.microsoft.com/download/pr/c8b8c117-a7b8-4a4f-ac3e-e97aac2e1b1a/fd0f3f7461ad7c518c2b0aa5613c80ca/dotnet-sdk-2.2.401-linux-musl-x64.tar.gz
+ARG URL=https://download.visualstudio.microsoft.com/download/pr/a6b8ba2c-30f2-4bb8-80ed-3f12ac623c41/2455fd6f2369d9a7396bb363482e9047/dotnet-runtime-2.2.6-linux-musl-x64.tar.gz
 
 USER root
 RUN apk update \
@@ -26,6 +26,3 @@ USER dev
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 ENV ASPNETCORE_URLS=http://+:80
 ENV DOTNET_RUNNING_IN_CONTAINER=true
-ENV DOTNET_USE_POLLING_FILE_WATCHER=true
-ENV NUGET_XMLDOC_MODE=skip
-RUN dotnet help

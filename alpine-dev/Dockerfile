@@ -1,4 +1,4 @@
-FROM mikiyamizui/base-alpine
+FROM mikiyamizui/alpine
 
 RUN apk update \
     && apk add --no-cache sudo less git vim fish

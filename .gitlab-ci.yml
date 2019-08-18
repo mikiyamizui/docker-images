@@ -3,85 +3,76 @@ image: docker:latest
 services:
   - docker:dind
 
+variables:
+  ALPINE_SHORT_VERSION: 3.10
+  ALPINE_LONG_VERSION: 3.10.1
+  DOTNET_VERSION: 2.2
+  DOTNET_RUNTIME_VERSION: 2.2.6
+  DOTNET_SDK_VERSION: 2.2.401
+
 stages:
-  - base-alpine
-  - base-alpine-tag
-  - base-sdk-alpine
-  - base-sdk-alpine-tag
-  - netcore-alpine
-  - netcore-alpine-tag
-  - netcore-sdk-alpine
-  - netcore-sdk-alpine-tag
+  - alpine
+  - alpine-dev
+  - alpine-dotnet
+  - alpine-dotnet-sdk
 
 before_script:
   - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
 
-base-alpine:
-  stage: base-alpine
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/base-alpine:latest ./base-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/base-alpine:latest
-
-base-alpine-tag:
-  stage: base-alpine-tag
+alpine:
+  stage: alpine
   only:
-    - tags
+    changes:
+      - alpine/**/*
+      - .gitlab-ci.yml
   script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/base-alpine:${CI_COMMIT_TAG} ./base-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/base-alpine:${CI_COMMIT_TAG}
-  dependencies:
-    - base-alpine
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:latest ./alpine
+    - docker push ${CI_REGISTRY_IMAGE}/alpine:latest
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_SHORT_VERSION} ./alpine
+    - docker push ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_SHORT_VERSION}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_LONG_VERSION} ./alpine
+    - docker push ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_LONG_VERSION}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${CI_COMMIT_REF_SLUG} ./alpine
+    - docker push ${CI_REGISTRY_IMAGE}/alpine:${CI_COMMIT_REF_SLUG}
 
-base-sdk-alpine:
-  stage: base-sdk-alpine
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/base-sdk-alpine:latest ./base-sdk-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/base-sdk-alpine:latest
-  dependencies:
-    - base-alpine
-
-base-sdk-alpine-tag:
-  stage: base-sdk-alpine-tag
+alpine-dev:
+  stage: alpine-dev
   only:
-    - tags
+    changes:
+      - alpine-dev/**/*
+      - .gitlab-ci.yml
   script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/base-sdk-alpine:${CI_COMMIT_TAG} ./base-sdk-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/base-sdk-alpine:${CI_COMMIT_TAG}
-  dependencies:
-    - base-sdk-alpine
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dev:latest ./alpine-dev
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dev:latest
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_SHORT_VERSION} ./alpine-dev
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_SHORT_VERSION}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_LONG_VERSION} ./alpine-dev
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_LONG_VERSION}
 
-netcore-alpine:
-  stage: netcore-alpine
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/netcore-alpine:latest ./netcore-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/netcore-alpine:latest
-  dependencies:
-    - base-alpine
-
-netcore-alpine-tag:
-  stage: netcore-alpine-tag
+alpine-dotnet:
+  stage: alpine-dotnet
   only:
-    - tags
+    changes:
+      - alpine-dotnet/**/*
+      - .gitlab-ci.yml
   script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/netcore-alpine:${CI_COMMIT_TAG} ./netcore-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/netcore-alpine:${CI_COMMIT_TAG}
-  dependencies:
-    - netcore-alpine
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet:latest ./alpine-dotnet
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet:latest
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_VERSION} ./alpine-dotnet
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_VERSION}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_RUNTIME_VERSION} ./alpine-dotnet
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_RUNTIME_VERSION}
 
-netcore-sdk-alpine:
-  stage: netcore-sdk-alpine
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/netcore-sdk-alpine:latest ./netcore-sdk-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/netcore-sdk-alpine:latest
-  dependencies:
-    - base-sdk-alpine
-
-netcore-sdk-alpine-tag:
-  stage: netcore-sdk-alpine-tag
+alpine-dotnet-sdk:
+  stage: alpine-dotnet-sdk
   only:
-    - tags
+    changes:
+      - alpine-dotnet-sdk/**/*
+      - .gitlab-ci.yml
   script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/netcore-sdk-alpine:${CI_COMMIT_TAG} ./netcore-sdk-alpine
-    - docker push ${CI_REGISTRY_IMAGE}/netcore-sdk-alpine:${CI_COMMIT_TAG}
-  dependencies:
-    - netcore-sdk-alpine
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:latest ./alpine-dotnet-sdk
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:latest
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_VERSION} ./alpine-dotnet-sdk
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_VERSION}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_SDK_VERSION} ./alpine-dotnet-sdk
+    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_SDK_VERSION}
