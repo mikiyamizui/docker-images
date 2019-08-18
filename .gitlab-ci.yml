@@ -1,0 +1,22 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+
+base-alpine:
+  stage: build
+  script:
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}:latest ./base-alpine
+    - docker push ${CI_REGISTRY_IMAGE}:latest
+
+base-alpine-tag:
+  stage: build
+  only:
+    - tags
+    - triggers
+  script:
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG} ./base-alpine
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
