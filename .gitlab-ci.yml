@@ -3,17 +3,27 @@ image: docker:latest
 services:
   - docker:dind
 
+stages:
+  - base-alpine
+  - base-alpine-tag
+  - base-sdk-alpine
+  - base-sdk-alpine-tag
+  - netcore-alpine
+  - netcore-alpine-tag
+  - netcore-sdk-alpine
+  - netcore-sdk-alpine-tag
+
 before_script:
   - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
 
 base-alpine:
-  stage: build
+  stage: base-alpine
   script:
     - docker build --pull -t ${CI_REGISTRY_IMAGE}/base-alpine:latest ./base-alpine
     - docker push ${CI_REGISTRY_IMAGE}/base-alpine:latest
 
 base-alpine-tag:
-  stage: build
+  stage: base-alpine-tag
   only:
     - tags
   script:
@@ -23,7 +33,7 @@ base-alpine-tag:
     - base-alpine
 
 base-sdk-alpine:
-  stage: build
+  stage: base-sdk-alpine
   script:
     - docker build --pull -t ${CI_REGISTRY_IMAGE}/base-sdk-alpine:latest ./base-sdk-alpine
     - docker push ${CI_REGISTRY_IMAGE}/base-sdk-alpine:latest
@@ -31,7 +41,7 @@ base-sdk-alpine:
     - base-alpine
 
 base-sdk-alpine-tag:
-  stage: build
+  stage: base-sdk-alpine-tag
   only:
     - tags
   script:
@@ -41,7 +51,7 @@ base-sdk-alpine-tag:
     - base-sdk-alpine
 
 netcore-alpine:
-  stage: build
+  stage: netcore-alpine
   script:
     - docker build --pull -t ${CI_REGISTRY_IMAGE}/netcore-alpine:latest ./netcore-alpine
     - docker push ${CI_REGISTRY_IMAGE}/netcore-alpine:latest
@@ -49,7 +59,7 @@ netcore-alpine:
     - base-alpine
 
 netcore-alpine-tag:
-  stage: build
+  stage: netcore-alpine-tag
   only:
     - tags
   script:
@@ -59,7 +69,7 @@ netcore-alpine-tag:
     - netcore-alpine
 
 netcore-sdk-alpine:
-  stage: build
+  stage: netcore-sdk-alpine
   script:
     - docker build --pull -t ${CI_REGISTRY_IMAGE}/netcore-sdk-alpine:latest ./netcore-sdk-alpine
     - docker push ${CI_REGISTRY_IMAGE}/netcore-sdk-alpine:latest
@@ -67,7 +77,7 @@ netcore-sdk-alpine:
     - base-sdk-alpine
 
 netcore-sdk-alpine-tag:
-  stage: build
+  stage: netcore-sdk-alpine-tag
   only:
     - tags
   script:
