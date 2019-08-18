@@ -1,0 +1,6 @@
+alpine:
+  extends: .build_push
+  stage: alpine
+  variables:
+    SHORT_TAG: "3.10"
+    LONG_TAG: "3.10.1"

@@ -1,0 +1,8 @@
+alpine-dotnet:
+  extends: .build_push
+  stage: alpine-dotnet
+  variables:
+    SHORT_TAG: "2.2"
+    LONG_TAG: "2.2.6"
+  dependencies:
+    - alpine

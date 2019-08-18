@@ -3,12 +3,21 @@ image: docker:latest
 services:
   - docker:dind
 
-variables:
-  ALPINE_SHORT_VERSION: "3.10"
-  ALPINE_LONG_VERSION: "3.10.1"
-  DOTNET_VERSION: "2.2"
-  DOTNET_RUNTIME_VERSION: "2.2.6"
-  DOTNET_SDK_VERSION: "2.2.401"
+.build_push:
+  only:
+    changes:
+      - .gitlab-ci.yml
+      - ${CI_JOB_NAME}/.gitlab-ci.yml
+      - ${CI_JOB_NAME}/Dockerfile
+      - ${CI_JOB_NAME}/dotfiles/**/*
+  script:
+    - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:latest ./${CI_JOB_NAME}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${SHORT_TAG} ./${CI_JOB_NAME}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${LONG_TAG} ./${CI_JOB_NAME}
+    - docker push ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:latest
+    - docker push ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${SHORT_TAG}
+    - docker push ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${LONG_TAG}
 
 stages:
   - alpine
@@ -16,61 +25,8 @@ stages:
   - alpine-dotnet
   - alpine-dotnet-sdk
 
-before_script:
-  - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
-
-alpine:
-  stage: alpine
-  only:
-    changes:
-      - alpine/**/*
-      - .gitlab-ci.yml
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:latest ./alpine
-    - docker push ${CI_REGISTRY_IMAGE}/alpine:latest
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_SHORT_VERSION} ./alpine
-    - docker push ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_SHORT_VERSION}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_LONG_VERSION} ./alpine
-    - docker push ${CI_REGISTRY_IMAGE}/alpine:${ALPINE_LONG_VERSION}
-
-alpine-dev:
-  stage: alpine-dev
-  only:
-    changes:
-      - alpine-dev/**/*
-      - .gitlab-ci.yml
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dev:latest ./alpine-dev
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dev:latest
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_SHORT_VERSION} ./alpine-dev
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_SHORT_VERSION}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_LONG_VERSION} ./alpine-dev
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dev:${ALPINE_LONG_VERSION}
-
-alpine-dotnet:
-  stage: alpine-dotnet
-  only:
-    changes:
-      - alpine-dotnet/**/*
-      - .gitlab-ci.yml
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet:latest ./alpine-dotnet
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet:latest
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_VERSION} ./alpine-dotnet
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_VERSION}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_RUNTIME_VERSION} ./alpine-dotnet
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet:${DOTNET_RUNTIME_VERSION}
-
-alpine-dotnet-sdk:
-  stage: alpine-dotnet-sdk
-  only:
-    changes:
-      - alpine-dotnet-sdk/**/*
-      - .gitlab-ci.yml
-  script:
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:latest ./alpine-dotnet-sdk
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:latest
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_VERSION} ./alpine-dotnet-sdk
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_VERSION}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_SDK_VERSION} ./alpine-dotnet-sdk
-    - docker push ${CI_REGISTRY_IMAGE}/alpine-dotnet-sdk:${DOTNET_SDK_VERSION}
+include:
+  - local: "/alpine/.gitlab-ci.yml"
+  - local: "/alpine-dev/.gitlab-ci.yml"
+  - local: "/alpine-dotnet/.gitlab-ci.yml"
+  - local: "/alpine-dotnet-sdk/.gitlab-ci.yml"
